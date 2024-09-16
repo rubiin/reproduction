@@ -1,10 +1,13 @@
-import { Entity, MikroORM, PrimaryKey, Property } from '@mikro-orm/sqlite';
-
+import { Entity, MikroORM, ObjectId, PrimaryKey, Property, SerializedPrimaryKey } from '@mikro-orm/mongodb';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 @Entity()
 class User {
 
-  @PrimaryKey()
-  id!: number;
+  @PrimaryKey({index: true})
+  _id: ObjectId;
+
+  @SerializedPrimaryKey()
+  id!: string; // won't be saved in the database
 
   @Property()
   name: string;
@@ -20,25 +23,38 @@ class User {
 }
 
 let orm: MikroORM;
+let mongod: MongoMemoryServer;
 
 beforeAll(async () => {
+
+
+  // This will create an new instance of "MongoMemoryServer" and automatically start it
+  mongod = await MongoMemoryServer.create();
+
+  const uri = mongod.getUri();
+
   orm = await MikroORM.init({
-    dbName: ':memory:',
+    dbName: 'test',
+    clientUrl: uri,
     entities: [User],
     debug: ['query', 'query-params'],
-    allowGlobalContext: true, // only for testing
+    ensureIndexes: true,
   });
   await orm.schema.refreshDatabase();
 });
 
 afterAll(async () => {
   await orm.close(true);
+  await mongod.stop();
 });
 
 test('basic CRUD example', async () => {
   orm.em.create(User, { name: 'Foo', email: 'foo' });
   await orm.em.flush();
   orm.em.clear();
+
+
+
 
   const user = await orm.em.findOneOrFail(User, { email: 'foo' });
   expect(user.name).toBe('Foo');

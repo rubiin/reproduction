@@ -12,7 +12,8 @@
   "license": "MIT",
   "dependencies": {
     "@mikro-orm/core": "next",
-    "@mikro-orm/sqlite": "next",
+    "@mikro-orm/mongodb": "next",
+    "mongodb-memory-server": "^10.0.0",
     "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {
