@@ -3,7 +3,7 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 @Entity()
 class User {
 
-  @PrimaryKey({index: true})
+  @PrimaryKey()
   _id: ObjectId;
 
   @SerializedPrimaryKey()
@@ -12,7 +12,7 @@ class User {
   @Property()
   name: string;
 
-  @Property({ unique: true })
+  @Property({ unique: true ,index:true})
   email: string;
 
 
