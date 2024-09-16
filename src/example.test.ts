@@ -15,10 +15,7 @@ class User {
   @Property({ unique: true })
   email: string;
 
-  constructor(name: string, email: string) {
-    this.name = name;
-    this.email = email;
-  }
+
 
 }
 
@@ -38,6 +35,7 @@ beforeAll(async () => {
     clientUrl: uri,
     entities: [User],
     debug: ['query', 'query-params'],
+    allowGlobalContext: true, // only for testing
     ensureIndexes: true,
   });
   await orm.schema.refreshDatabase();
